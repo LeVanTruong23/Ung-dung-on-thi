@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Làm bài</title>
+
+  <style>
+    body {
+      background: #0f172a;
+      color: white;
+      font-family: Arial, sans-serif;
+      margin: 0;
+    }
+
+    .quiz-container {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .main {
+      flex: 3;
+      padding: 40px;
+    }
+
+    .sidebar {
+      flex: 1;
+      background: #1e293b;
+      padding: 20px;
+    }
+
+    .option {
+      background: #1e293b;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .option:hover {
+      background: #334155;
+    }
+
+    .correct {
+      background: #16a34a !important;
+    }
+
+    .wrong {
+      background: #dc2626 !important;
+    }
+
+    .nav-buttons {
+      margin-top: 20px;
+    }
+
+    button {
+      margin: 4px;
+      padding: 8px 14px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .btn-prev { background: #475569; }
+    .btn-next { background: #2563eb; }
+    .btn-finish { background: #f59e0b; }
+    .btn-home { background: #0ea5e9; }
+
+    #timer {
+      margin-bottom: 20px;
+      font-weight: bold;
+    }
+
+    .result-box {
+      margin-top: 20px;
+      padding: 20px;
+      background: #1e293b;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="quiz-container">
+  <div class="main">
+    <h2 id="questionTitle"></h2>
+    <p id="questionText"></p>
+    <div id="options"></div>
+
+    <div class="nav-buttons">
+      <button class="btn-prev" onclick="prevQuestion()">⬅ Quay lại</button>
+      <button class="btn-next" onclick="nextQuestion()">Tiếp tục ➡</button>
+      <button class="btn-finish" onclick="finishExam()">Kết thúc bài</button>
+      <button class="btn-home" onclick="goHome()">Trang chủ</button>
+    </div>
+
+    <div id="result"></div>
+  </div>
+
+  <div class="sidebar">
+    <div id="timer"></div>
+    <div id="navigator"></div>
+    <button onclick="retryWrong()">Làm lại câu sai</button>
+    <button ondblclick="shuffleQuestions()">🔀 Xáo trộn câu hỏi</button>
+    <button onclick="restoreOriginal()">📘 Trở về đề gốc</button>
+  </div>
+</div>
+
+<script>
+  const urlParams = new URLSearchParams(window.location.search);
+  const examId = urlParams.get("exam");
+
+  const storedExam = JSON.parse(localStorage.getItem(examId));
+
+  if (!storedExam) {
+    alert("Không tìm thấy đề!");
+    window.location.href = "index.html";
+  }
+
+  let questions = storedExam.questions;
+  let originalQuestions = [...storedExam.questions];
+  let current = 0;
+  let answers = {};
+  let time = 0;
+  let finished = false;
+
+  const questionTitle = document.getElementById("questionTitle");
+  const questionText = document.getElementById("questionText");
+  const optionsDiv = document.getElementById("options");
+  const navigatorDiv = document.getElementById("navigator");
+  const timerDiv = document.getElementById("timer");
+  const resultDiv = document.getElementById("result");
+
+  setInterval(() => {
+    time++;
+    timerDiv.innerText = "Thời gian: " + time + "s";
+  }, 1000);
+
+  function renderQuestion() {
+    const q = questions[current];
+
+    if (!q) return;
+
+    questionTitle.innerText = "Câu " + (current + 1);
+    questionText.innerText = q.text;
+
+    optionsDiv.innerHTML = "";
+
+    Object.entries(q.options).forEach(([key, value]) => {
+      const btn = document.createElement("div");
+      btn.innerText = key + ". " + value;
+      btn.className = "option";
+
+      btn.onclick = () => selectAnswer(key);
+
+      if (answers[current]) {
+        if (key === q.correct) {
+          btn.classList.add("correct");
+        } else if (answers[current] === key) {
+          btn.classList.add("wrong");
+        }
+      }
+
+      optionsDiv.appendChild(btn);
+    });
+
+    renderNavigator();
+  }
+
+  function selectAnswer(key) {
+  if (finished) return;
+
+  answers[current] = key;
+  renderQuestion();
+
+  const answeredCount = Object.keys(answers).length;
+
+  if (answeredCount === questions.length) {
+    setTimeout(() => {
+      finishExam();
+    }, 500);
+    return;
+  }
+
+  setTimeout(() => {
+    if (current < questions.length - 1) {
+      current++;
+      renderQuestion();
+    }
+  }, 400);
+  }
+
+  function nextQuestion() {
+    if (current < questions.length - 1) {
+      current++;
+      renderQuestion();
+    }
+  }
+
+  function prevQuestion() {
+    if (current > 0) {
+      current--;
+      renderQuestion();
+    }
+  }
+
+  function renderNavigator() {
+    navigatorDiv.innerHTML = "";
+
+    questions.forEach((_, i) => {
+      const btn = document.createElement("button");
+      btn.innerText = i + 1;
+
+      if (answers[i]) {
+        btn.style.background =
+          answers[i] === questions[i].correct
+            ? "green"
+            : "red";
+      }
+
+      btn.onclick = () => {
+        current = i;
+        renderQuestion();
+      };
+
+      navigatorDiv.appendChild(btn);
+    });
+  }
+
+  function finishExam() {
+  finished = true;
+
+  let correct = 0;
+  let wrong = 0;
+  let unanswered = 0;
+
+  questions.forEach((q, i) => {
+    if (!answers[i]) {
+      unanswered++;
+    } else if (answers[i] === q.correct) {
+      correct++;
+    } else {
+      wrong++;
+    }
+  });
+
+  const percent = ((correct / questions.length) * 100).toFixed(1);
+
+  resultDiv.innerHTML = `
+    <div class="result-box">
+      <h3>📊 KẾT QUẢ BÀI THI</h3>
+      <p>✅ Số câu đúng: <strong>${correct}</strong></p>
+      <p>❌ Số câu sai: <strong>${wrong}</strong></p>
+      <p>⚠️ Chưa làm: <strong>${unanswered}</strong></p>
+      <p>🎯 Tỷ lệ đúng: <strong>${percent}%</strong></p>
+      <p>⏱ Thời gian làm bài: <strong>${time}s</strong></p>
+
+      <button onclick="redoWrong()" style="background:#f97316">
+        🔁 Làm lại câu sai
+      </button>
+
+      <button onclick="restartFullExam()" style="background:#ef4444">
+        🔄 Làm lại toàn bộ bài
+      </button>
+    </div>
+  `;
+  }
+  function continueExam() {
+  finished = false;
+  resultDiv.innerHTML = "";
+
+  for (let i = 0; i < questions.length; i++) {
+    if (!answers[i]) {
+      current = i;
+      renderQuestion();
+      return;
+    }
+  }
+
+  alert("Bạn đã làm hết tất cả câu hỏi!");
+  }
+
+  function restartExam() {
+  answers = {};
+  current = 0;
+  time = 0;
+  resultDiv.innerHTML = "";
+  renderQuestion();
+  }
+
+  function retryWrong() {
+    questions = questions.filter(
+      (_, i) => answers[i] !== storedExam.questions[i].correct
+    );
+
+    answers = {};
+    current = 0;
+    resultDiv.innerHTML = "";
+    renderQuestion();
+  }
+
+  function goHome() {
+    window.location.href = "index.html";
+  }
+
+  function redoWrong() {
+  finished = false;
+
+  questions = originalQuestions.filter((q, i) => {
+    return answers[i] !== q.correct;
+  });
+
+  answers = {};
+  current = 0;
+  resultDiv.innerHTML = "";
+
+  if (questions.length === 0) {
+    alert("Không có câu sai để làm lại 🎉");
+    return;
+  }
+
+  renderQuestion();
+}
+
+  function restartFullExam() {
+  finished = false;
+  questions = [...originalQuestions];
+  answers = {};
+  current = 0;
+  time = 0;
+  resultDiv.innerHTML = "";
+
+  renderQuestion();
+  }
+
+  function shuffleQuestions() {
+  if (finished) {
+    alert("Không thể xáo trộn khi đã kết thúc bài!");
+    return;
+  }
+
+  // Thuật toán Fisher-Yates shuffle
+  for (let i = questions.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [questions[i], questions[j]] = [questions[j], questions[i]];
+  }
+
+  current = 0;
+  answers = {};
+  resultDiv.innerHTML = "";
+
+  renderQuestion();
+
+  alert("Đã xáo trộn câu hỏi 🔀");
+  }
+
+  function restoreOriginal() {
+    if (finished) {
+      alert("Không thể đổi đề khi đã kết thúc!");
+      return;
+    }
+
+    questions = [...originalQuestions];
+    answers = {};
+    current = 0;
+    resultDiv.innerHTML = "";
+
+    renderQuestion();
+
+    alert("Đã khôi phục đề gốc 📘");
+  }
+
+
+  renderQuestion();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>EduQuiz - Trang chủ</title>
+
+  <style>
+    body {
+      background: #0f172a;
+      color: white;
+      font-family: Arial, sans-serif;
+      margin: 0;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      padding: 40px;
+    }
+
+    h1 {
+      margin-bottom: 30px;
+    }
+
+    .upload-box {
+      background: #1e293b;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    input[type="file"] {
+      color: white;
+    }
+
+    button {
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      opacity: 0.85;
+    }
+
+    .exam-card {
+      background: #1e293b;
+      padding: 15px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 8px;
+    }
+
+    .exam-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-start {
+      background: #16a34a;
+    }
+
+    .btn-delete {
+      background: #dc2626;
+    }
+
+    .empty {
+      color: #9ca3af;
+      margin-top: 10px;
+    }
+
+    .message {
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+    .success { color: #22c55e; }
+    .error { color: #ef4444; }
+
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>🎓 EduQuiz</h1>
+
+    <div class="upload-box">
+      <input type="file" id="fileInput" accept=".docx">
+      <button onclick="uploadExam()">Upload đề</button>
+    </div>
+
+    <div id="message" class="message"></div>
+
+    <h2>📚 Danh sách đề</h2>
+    <div id="examList"></div>
+  </div>
+
+  <script>
+    const fileInput = document.getElementById("fileInput");
+    const examList = document.getElementById("examList");
+    const messageDiv = document.getElementById("message");
+
+    async function uploadExam() {
+      const file = fileInput.files[0];
+
+      if (!file) {
+        showMessage("Vui lòng chọn file .docx", "error");
+        return;
+      }
+
+      try {
+        const formData = new FormData();
+        formData.append("file", file);
+
+        const res = await fetch("http://127.0.0.1:8000/upload-exam", {
+          method: "POST",
+          body: formData
+        });
+
+        if (!res.ok) {
+          throw new Error("Upload thất bại");
+        }
+
+        const data = await res.json();
+
+        // Lưu theo cấu trúc chuẩn
+        const examData = {
+          name: file.name,
+          total: data.total_questions,
+          questions: data.questions
+        };
+
+        localStorage.setItem("exam_" + file.name, JSON.stringify(examData));
+
+        showMessage("Upload thành công ✔", "success");
+        fileInput.value = "";
+        loadExams();
+
+      } catch (error) {
+        showMessage("Lỗi: " + error.message, "error");
+      }
+    }
+
+    function loadExams() {
+      examList.innerHTML = "";
+
+      const keys = Object.keys(localStorage).filter(key => key.startsWith("exam_"));
+
+      if (keys.length === 0) {
+        examList.innerHTML = `<div class="empty">Chưa có đề nào.</div>`;
+        return;
+      }
+
+      keys.forEach(key => {
+        const exam = JSON.parse(localStorage.getItem(key));
+
+        const div = document.createElement("div");
+        div.className = "exam-card";
+
+        div.innerHTML = `
+          <div>
+            <strong>${exam.name}</strong><br>
+            <small>${exam.total} câu hỏi</small>
+          </div>
+          <div class="exam-actions">
+            <button class="btn-start" onclick="startExam('${key}')">Bắt đầu</button>
+            <button class="btn-delete" onclick="deleteExam('${key}')">Xóa</button>
+          </div>
+        `;
+
+        examList.appendChild(div);
+      });
+    }
+
+    function startExam(id) {
+      window.location.href = `quiz.html?exam=${id}`;
+    }
+
+    function deleteExam(id) {
+      if (confirm("Bạn chắc chắn muốn xóa đề này?")) {
+        localStorage.removeItem(id);
+        loadExams();
+      }
+    }
+
+    function showMessage(text, type) {
+      messageDiv.className = "message " + type;
+      messageDiv.innerText = text;
+    }
+
+    loadExams();
+  </script>
+
+</body>
+</html>

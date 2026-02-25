@@ -1,0 +1,36 @@
+body {
+  background: #111827;
+  color: white;
+  font-family: Arial, sans-serif;
+  margin: 0;
+}
+
+.container {
+  padding: 40px;
+}
+
+.upload-box {
+  margin-bottom: 30px;
+}
+
+button {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+button:hover {
+  opacity: 0.8;
+}
+
+.exam-card {
+  background: #1f2937;
+  padding: 15px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  border-radius: 8px;
+}
