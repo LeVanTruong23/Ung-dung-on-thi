@@ -6,6 +6,23 @@
   <title>ÔN THI TRẮC NGHIỆM</title>
 
   <style>
+    :root {
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --text: #0f172a;
+      --primary: #2563eb;
+      --success: #16a34a;
+      --danger: #dc2626;
+      --shadow: rgba(0, 0, 0, 0.1);
+    }
+
+    body.dark {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --text: #ffffff;
+      --shadow: rgba(0, 0, 0, 0.4);
+    }
+
     * {
       box-sizing: border-box;
     }
@@ -13,9 +30,9 @@
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #0f172a, #1e3a8a);
-      color: white;
-      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      transition: 0.3s ease;
     }
 
     .container {
@@ -24,41 +41,56 @@
       padding: 40px 20px;
     }
 
+    /* Header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
     h1 {
-      text-align: center;
-      font-size: 32px;
-      margin-bottom: 40px;
-      background: linear-gradient(to right, #38bdf8, #22c55e);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      margin: 0;
+      font-size: 28px;
     }
 
-    h2 {
-      margin-top: 40px;
-      margin-bottom: 20px;
+    .theme-toggle {
+      background: var(--card);
+      border: none;
+      font-size: 18px;
+      padding: 8px 14px;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 4px 10px var(--shadow);
+      transition: 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    /* Upload Box */
+    .theme-toggle:hover {
+      transform: scale(1.1);
+    }
+
+   
     .upload-box {
-      background: rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(12px);
+      background: var(--card);
       padding: 20px;
       border-radius: 12px;
+      margin-bottom: 30px;
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
       align-items: center;
-      justify-content: space-between;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+      box-shadow: 0 6px 15px var(--shadow);
       transition: 0.3s;
     }
 
     .upload-box:hover {
-      transform: translateY(-4px);
+      transform: translateY(-3px);
     }
 
     input[type="file"] {
-      color: white;
       flex: 1;
       min-width: 200px;
     }
@@ -70,37 +102,28 @@
       cursor: pointer;
       font-weight: 600;
       transition: 0.3s;
+      color: white;
     }
 
     button:hover {
-      transform: scale(1.05);
+      transform: translateY(-2px);
       opacity: 0.9;
     }
 
-    button:active {
-      transform: scale(0.95);
+    .upload-box button {
+      background: var(--primary);
     }
 
-    /* Buttons */
     .btn-start {
-      background: linear-gradient(to right, #16a34a, #22c55e);
-      color: white;
+      background: var(--success);
     }
 
     .btn-delete {
-      background: linear-gradient(to right, #dc2626, #ef4444);
-      color: white;
+      background: var(--danger);
     }
 
-    .upload-box button {
-      background: linear-gradient(to right, #2563eb, #3b82f6);
-      color: white;
-    }
-
-    /* Exam Card */
     .exam-card {
-      background: rgba(255, 255, 255, 0.07);
-      backdrop-filter: blur(8px);
+      background: var(--card);
       padding: 18px;
       margin-bottom: 15px;
       border-radius: 12px;
@@ -109,13 +132,13 @@
       align-items: center;
       flex-wrap: wrap;
       gap: 10px;
+      box-shadow: 0 6px 15px var(--shadow);
       transition: 0.3s;
       animation: fadeIn 0.4s ease forwards;
     }
 
     .exam-card:hover {
       transform: translateY(-4px);
-      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
     }
 
     .exam-actions {
@@ -124,32 +147,44 @@
     }
 
     .empty {
-      color: #cbd5e1;
-      margin-top: 10px;
+      color: gray;
       font-style: italic;
     }
 
     .message {
-      margin-top: 15px;
+      margin-top: 10px;
       font-size: 14px;
       font-weight: 500;
     }
 
-    .success { color: #22c55e; }
-    .error { color: #ef4444; }
+  .exam-section {
+    background: var(--card);
+    padding: 25px;
+    border-radius: 16px;
+    box-shadow: 0 8px 25px var(--shadow);
+    margin-top: 20px;
+    transition: 0.3s;
+  }
 
-    /* Animation */
+  .exam-section:hover {
+    transform: translateY(-3px);
+  }
+
+  .exam-section h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 20px;
+  }
+
+    .success { color: var(--success); }
+    .error { color: var(--danger); }
+
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
+      from { opacity: 0; transform: translateY(8px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* Responsive */
     @media (max-width: 768px) {
-      h1 {
-        font-size: 24px;
-      }
-
       .exam-card {
         flex-direction: column;
         align-items: flex-start;
@@ -170,7 +205,11 @@
 <body>
 
   <div class="container">
-    <h1>🎓 EduQuiz</h1>
+
+    <div class="header">
+      <h1>ÔN THI TRẮC NGHIỆM</h1>
+      <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+    </div>
 
     <div class="upload-box">
       <input type="file" id="fileInput" accept=".docx">
@@ -179,14 +218,38 @@
 
     <div id="message" class="message"></div>
 
-    <h2>📚 Danh sách đề</h2>
-    <div id="examList"></div>
+    <div class="exam-section">
+      <h2>📚 Danh sách đề</h2>
+      <div id="examList"></div>
+    </div>
+
   </div>
 
   <script>
     const fileInput = document.getElementById("fileInput");
     const examList = document.getElementById("examList");
     const messageDiv = document.getElementById("message");
+
+
+    function toggleTheme() {
+      document.body.classList.toggle("dark");
+
+      const btn = document.querySelector(".theme-toggle");
+      if (document.body.classList.contains("dark")) {
+        btn.innerText = "☀";
+        localStorage.setItem("theme", "dark");
+      } else {
+        btn.innerText = "🌙";
+        localStorage.setItem("theme", "light");
+      }
+    }
+
+
+    if (localStorage.getItem("theme") === "dark") {
+      document.body.classList.add("dark");
+      document.querySelector(".theme-toggle").innerText = "☀";
+    }
+
 
     async function uploadExam() {
       const file = fileInput.files[0];
