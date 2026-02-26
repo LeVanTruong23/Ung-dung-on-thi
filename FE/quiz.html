@@ -173,6 +173,7 @@
     <button onclick="retryWrong()">Làm lại câu sai</button>
     <button ondblclick="shuffleQuestions()">🔀 Xáo trộn câu hỏi</button>
     <button onclick="restoreOriginal()">📘 Trở về đề gốc</button>
+    <button onclick="shuffleAnswers()">🔀 Xáo trộn đáp án</button>
   </div>
 </div>
 
@@ -187,8 +188,8 @@
     window.location.href = "index.html";
   }
 
-  let questions = storedExam.questions;
-  let originalQuestions = [...storedExam.questions];
+  let originalQuestions = JSON.parse(JSON.stringify(storedExam.questions));
+  let questions = JSON.parse(JSON.stringify(storedExam.questions));
   let current = 0;
   let answers = {};
   let time = 0;
@@ -207,7 +208,6 @@
   }, 1000);
 
 
-  /* ===== Dark Mode ===== */
 function toggleTheme() {
     document.body.classList.toggle("dark");
 
@@ -430,7 +430,6 @@ function toggleTheme() {
     return;
   }
 
-  // Thuật toán Fisher-Yates shuffle
   for (let i = questions.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [questions[i], questions[j]] = [questions[j], questions[i]];
@@ -451,7 +450,7 @@ function toggleTheme() {
       return;
     }
 
-    questions = [...originalQuestions];
+    questions = JSON.parse(JSON.stringify(originalQuestions));
     answers = {};
     current = 0;
     resultDiv.innerHTML = "";
@@ -459,6 +458,47 @@ function toggleTheme() {
     renderQuestion();
 
     alert("Đã khôi phục đề gốc 📘");
+  }
+
+  function shuffleAnswers() {
+    if (finished) {
+      alert("Không thể xáo trộn khi đã kết thúc bài!");
+      return;
+    }
+
+    questions.forEach(q => {
+
+      const entries = Object.entries(q.options);
+
+      for (let i = entries.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [entries[i], entries[j]] = [entries[j], entries[i]];
+      }
+
+      const newOptions = {};
+      const keys = ["A", "B", "C", "D"];
+
+      let newCorrect = "";
+
+      entries.forEach((item, index) => {
+        const newKey = keys[index];
+        newOptions[newKey] = item[1];
+
+        if (item[0] === q.correct) {
+          newCorrect = newKey;
+        }
+      });
+
+      q.options = newOptions;
+      q.correct = newCorrect;
+    });
+
+    answers = {};
+    current = 0;
+    resultDiv.innerHTML = "";
+    renderQuestion();
+
+    alert("Đã xáo trộn đáp án 🔀");
   }
 
 
