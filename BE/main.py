@@ -6,10 +6,9 @@ import os
 
 app = FastAPI()
 
-# ✅ BẬT CORS (QUAN TRỌNG)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Dev thì để *, production thì đổi domain cụ thể
+    allow_origins=["*"],  
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

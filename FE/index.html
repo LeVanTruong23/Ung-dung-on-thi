@@ -41,7 +41,6 @@
       padding: 40px 20px;
     }
 
-    /* Header */
     .header {
       display: flex;
       justify-content: space-between;
@@ -176,6 +175,24 @@
     font-size: 20px;
   }
 
+  #dropArea {
+    border: 2px dashed #94a3b8;
+    text-align: center;
+    padding: 30px;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  #dropArea.dragover {
+    border-color: var(--primary);
+    background: rgba(37,99,235,0.05);
+  }
+
+  #dropText {
+    margin-bottom: 10px;
+    font-size: 14px;
+  }
+
     .success { color: var(--success); }
     .error { color: var(--danger); }
 
@@ -211,9 +228,14 @@
       <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
     </div>
 
-    <div class="upload-box">
-      <input type="file" id="fileInput" accept=".docx">
-      <button onclick="uploadExam()">Upload đề</button>
+    <div class="upload-box" id="dropArea">
+      <input type="file" id="fileInput" accept=".docx" hidden>
+
+      <div id="dropText">
+        📂 Kéo thả file .docx vào đây hoặc bấm nút để chọn
+      </div>
+
+      <button id="uploadBtn" onclick="handleUpload()">Chọn đề</button>
     </div>
 
     <div id="message" class="message"></div>
@@ -229,6 +251,8 @@
     const fileInput = document.getElementById("fileInput");
     const examList = document.getElementById("examList");
     const messageDiv = document.getElementById("message");
+    const dropArea = document.getElementById("dropArea");
+    const uploadBtn = document.getElementById("uploadBtn");
 
 
     function toggleTheme() {
@@ -337,6 +361,52 @@
       messageDiv.className = "message " + type;
       messageDiv.innerText = text;
     }
+
+    uploadBtn.onclick = handleUpload;
+
+    function handleUpload() {
+
+      if (!fileInput.files.length) {
+        fileInput.click(); 
+        return;
+      }
+
+      uploadExam();
+    }
+
+    fileInput.addEventListener("change", () => {
+      if (fileInput.files.length) {
+        uploadBtn.innerText = "Upload đề";
+        document.getElementById("dropText").innerText =
+          "📄 " + fileInput.files[0].name;
+      }
+    });
+
+
+    dropArea.addEventListener("dragover", e => {
+      e.preventDefault();
+      dropArea.classList.add("dragover");
+    });
+
+
+    dropArea.addEventListener("dragleave", () => {
+      dropArea.classList.remove("dragover");
+    });
+
+
+    dropArea.addEventListener("drop", e => {
+      e.preventDefault();
+      dropArea.classList.remove("dragover");
+
+      const files = e.dataTransfer.files;
+
+      if (files.length) {
+        fileInput.files = files;
+        uploadBtn.innerText = "Upload đề";
+        document.getElementById("dropText").innerText =
+          "📄 " + files[0].name;
+      }
+    });
 
     loadExams();
   </script>
