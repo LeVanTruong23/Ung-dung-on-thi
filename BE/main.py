@@ -90,7 +90,7 @@ async def upload_exam(file: UploadFile = File(...)):
 
     questions = parse_docx(file_path)
 
-    os.remove(file_path)  
+    os.remove(file_path)
 
     return {
         "message": "Upload & parse thành công",
