@@ -199,7 +199,7 @@
       renderQuestion();
     }
 
-    function goHome() { window.location.href = "index.html"; }
+    function goHome() {window.location.href = "index.html";}
 
     function redoWrong() {
       finished = false;

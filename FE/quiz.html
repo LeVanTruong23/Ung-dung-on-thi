@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Làm bài</title>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="quiz-container">
+  <div class="main">
+    <h2 id="questionTitle"></h2>
+    <p id="questionText"></p>
+    <div id="options"></div>
+
+    <div class="nav-buttons">
+      <button class="btn-prev" onclick="prevQuestion()">⬅ Quay lại</button>
+      <button class="btn-next" onclick="nextQuestion()">Tiếp tục ➡</button>
+      <button class="btn-finish" onclick="finishExam()">Kết thúc bài</button>
+      <button class="btn-home" onclick="goHome()">Trang chủ</button>
+    </div>
+
+    <div id="result"></div>
+  </div>
+
+  <div class="sidebar">
+  <div id="timer"></div>
+  
+  <div id="navigator">
+    </div>
+
+  <div class="sidebar-actions">
+    <button onclick="retryWrong()" style="background-color: #f97316; color: white;">🔁 Làm lại câu sai</button>
+    <button onclick="shuffleQuestions()" style="background-color: #8b5cf6; color: white;"> 🔀 Xáo trộn câu hỏi </button>
+    <button onclick="restoreOriginal()" style="background-color: #64748b; color: white;">📘 Trở về đề gốc</button>
+    <button onclick="shuffleAnswers()" style="background-color: #0ea5e9; color: white;">🔀 Xáo trộn đáp án</button>
+  </div>
+</div>
+<script src="quiz.js"></script>
+
+
+</body>
+</html>
