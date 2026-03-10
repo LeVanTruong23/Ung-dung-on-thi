@@ -1,0 +1,136 @@
+:root {
+    --bg: #f1f5f9;
+    --card: #ffffff;
+    --text: #0f172a;
+    --primary: #2563eb;
+    --success: #16a34a;
+    --danger: #dc2626;
+    --warning: #f59e0b;
+    --info: #0ea5e9;
+    --shadow: rgba(0, 0, 0, 0.1);
+  }
+
+    body.dark {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --text: #ffffff;
+      --shadow: rgba(0, 0, 0, 0.4);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      transition: 0.3s ease;
+    }
+
+    .quiz-container {
+      display: flex;
+      min-height: 100vh;
+      gap: 20px;
+      padding: 20px;
+    }
+
+    .main {
+      flex: 3;
+      background: var(--card);
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 8px 25px var(--shadow);
+    }
+
+    .sidebar {
+      flex: 1;
+      background: var(--card);
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 8px 25px var(--shadow);
+    }
+
+    #questionText {
+      margin-bottom: 20px;
+    }
+
+    .option {
+      background: var(--bg);
+      padding: 12px;
+      margin-bottom: 10px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.3s;
+      border: 1px solid transparent;
+    }
+
+    .option:hover {
+      transform: translateY(-2px);
+      border: 1px solid var(--primary);
+    }
+
+    .correct {
+      background: var(--success) !important;
+      color: white;
+    }
+
+    .wrong {
+      background: var(--danger) !important;
+      color: white;
+    }
+
+    .nav-buttons {
+      margin-top: 20px;
+    }
+
+    button {
+      margin: 4px;
+      padding: 8px 14px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      opacity: 0.9;
+    }
+
+    .btn-prev { background: #64748b; }
+    .btn-next { background: var(--primary); }
+    .btn-finish { background: var(--warning); }
+    .btn-home { background: var(--info); }
+
+    #timer {
+      margin-bottom: 20px;
+      font-weight: bold;
+    }
+
+    .result-box {
+      margin-top: 20px;
+      padding: 20px;
+      background: var(--bg);
+      border-radius: 14px;
+      box-shadow: 0 4px 12px var(--shadow);
+    }
+
+    .theme-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: var(--card);
+      border: none;
+      padding: 8px 12px;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 4px 10px var(--shadow);
+    }
+
+    @media (max-width: 900px) {
+      .quiz-container {
+        flex-direction: column;
+      }
+    }

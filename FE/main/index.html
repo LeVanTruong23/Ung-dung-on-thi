@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ÔN THI TRẮC NGHIỆM</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <div class="container">
+
+    <div class="header">
+      <h1>ÔN THI TRẮC NGHIỆM</h1>
+      <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+    </div>
+
+    <div class="upload-box" id="dropArea">
+      <input type="file" id="fileInput" accept=".docx" hidden>
+
+      <div id="dropText">
+        📂 Kéo thả file .docx vào đây hoặc bấm nút để chọn
+      </div>
+
+      <button id="uploadBtn" onclick="handleUpload()">Chọn đề</button>
+    </div>
+
+    <div id="message" class="message"></div>
+
+    <div class="exam-section">
+      <h2>📚 Danh sách đề</h2>
+      <div id="examList"></div>
+    </div>
+
+  </div>
+
+  <script src="main.js"></script>
+
+</body>
+</html>
