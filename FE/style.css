@@ -323,7 +323,6 @@ body.dark .option:hover {
    RESPONSIVE MULTI SCREEN
 ========================= */
 
-/* PC màn hình lớn */
 @media (min-width: 1400px) {
   .quiz-container {
     max-width: 1400px;
@@ -335,7 +334,6 @@ body.dark .option:hover {
   }
 }
 
-/* Laptop */
 @media (max-width: 1200px) {
   .quiz-container {
     grid-template-columns: 1fr 300px;

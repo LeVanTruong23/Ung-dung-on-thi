@@ -121,70 +121,58 @@
       messageDiv.innerText = text;
     }
 
-    // uploadBtn.addEventListener("click", handleUpload);
-
-    // function handleUpload() {
-
-    //   if (!fileInput.files.length) {
-    //     fileInput.click(); 
-    //     return;
-    //   }
-
-    //   uploadExam();
-    // }
-
    
-function updateUploadUI(file) {
-    if (file) {
-        uploadBtn.innerText = "Upload ngay 🚀";
-        uploadBtn.style.backgroundColor = "var(--success)";
-        document.getElementById("dropText").innerText = "📄 " + file.name;
-    } else {
-        uploadBtn.innerText = "Chọn đề";
-        uploadBtn.style.backgroundColor = "var(--primary)";
-        document.getElementById("dropText").innerText = "📂 Kéo thả file .docx vào đây hoặc bấm nút để chọn";
-    }
-}
+  function updateUploadUI(file) {
+      if (file) {
+          uploadBtn.innerText = "Upload ngay 🚀";
+          uploadBtn.style.backgroundColor = "var(--success)";
+          document.getElementById("dropText").innerText = "📄 " + file.name;
+      } else {
+          uploadBtn.innerText = "Chọn đề";
+          uploadBtn.style.backgroundColor = "var(--primary)";
+          document.getElementById("dropText").innerText = "📂 Kéo thả file .docx vào đây hoặc bấm nút để chọn";
+      }
+  }
 
-uploadBtn.onclick = function() {
-    if (fileInput.files.length > 0) {
-        uploadExam();
-    } else {
-        fileInput.click();
-    }
-};
+  uploadBtn.onclick = function() {
+      if (fileInput.files.length > 0) {
+          uploadExam();
+      } else {
+          fileInput.click();
+      }
+  };
 
-fileInput.addEventListener("change", () => {
-    if (fileInput.files.length > 0) {
-        updateUploadUI(fileInput.files[0]);
-    }
-});
+  fileInput.addEventListener("change", () => {
+      if (fileInput.files.length > 0) {
+          updateUploadUI(fileInput.files[0]);
+      }
+  });
 
-dropArea.addEventListener("dragover", e => {
-    e.preventDefault();
-    dropArea.style.borderColor = "var(--primary)";
-    dropArea.style.backgroundColor = "rgba(79, 70, 229, 0.1)";
-});
+  dropArea.addEventListener("dragover", e => {
+      e.preventDefault();
+      dropArea.style.borderColor = "var(--primary)";
+      dropArea.style.backgroundColor = "rgba(79, 70, 229, 0.1)";
+  });
 
-dropArea.addEventListener("dragleave", () => {
-    e.preventDefault();
-    dropArea.style.borderColor = "#94a3b8";
-    dropArea.style.backgroundColor = "transparent";
-});
+  dropArea.addEventListener("dragleave", () => {
+      e.preventDefault();
+      dropArea.style.borderColor = "#94a3b8";
+      dropArea.style.backgroundColor = "transparent";
+  });
 
-dropArea.addEventListener("drop", e => {
-    e.preventDefault();
-    dropArea.style.borderColor = "#94a3b8";
-    dropArea.style.backgroundColor = "transparent";
+  dropArea.addEventListener("drop", e => {
+      e.preventDefault();
+      dropArea.style.borderColor = "#94a3b8";
+      dropArea.style.backgroundColor = "transparent";
 
-    const files = e.dataTransfer.files;
-    if (files.length > 0) {
-        fileInput.files = files; 
-        updateUploadUI(files[0]);
-        
-        uploadExam(); 
-    }
-});
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+          fileInput.files = files; 
+          updateUploadUI(files[0]);
+          
+          uploadExam(); 
+      }
+  });
 
     
 
