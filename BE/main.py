@@ -8,7 +8,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -28,6 +28,28 @@ def parse_docx(file_path):
         option_buffer = ""
         current_option = None
 
+    def is_correct_format(run, paragraph):
+
+        if run.bold:
+            return True
+
+        if run.underline:
+            return True
+
+        if run.style and run.style.font and run.style.font.bold:
+            return True
+
+        if paragraph.style and paragraph.style.font and paragraph.style.font.bold:
+            return True
+
+        if run.font and run.font.highlight_color:
+            return True
+
+        if run.font and run.font.color and run.font.color.rgb:
+            return True
+
+        return False
+
     def handle_paragraph(paragraph):
         nonlocal current_q, questions, current_option, option_buffer
 
@@ -35,33 +57,84 @@ def parse_docx(file_path):
         if not text:
             return
 
-        if re.search(r'\bA[\.\):]\s*', text):
-            if current_q:
-                save_option()
-                questions.append(current_q)
+        lines = text.split("\n")
 
-            current_q = {
-                "text": text.split("A")[0].strip(),
-                "options": {},
-                "correct": None
-            }
-
-        for run in paragraph.runs:
-            run_text = run.text.strip()
-            if not run_text:
+        for text in lines:
+            text = text.strip()
+            if not text:
                 continue
 
-            match = re.match(r'([A-D])[\.\):]\s*(.*)', run_text)
-            if match:
+            question_match = re.match(r'^(câu\s*\d+[\.\):]?|\d+[\.\):])\s*(.*)', text, re.IGNORECASE)
+
+            if question_match:
                 save_option()
-                current_option = match.group(1)
-                option_buffer = match.group(2)
 
-            elif current_option:
-                option_buffer += " " + run_text
+                if current_q and current_q["options"]:
+                    questions.append(current_q)
 
-            if (run.bold or run.underline) and current_option:
-                current_q["correct"] = current_option
+                current_q = {
+                    "text": text,
+                    "options": {},
+                    "correct": None
+                }
+                continue
+
+            multi_option = re.findall(r'([A-D])[\.\):]\s*(.*?)(?=\s+[A-D][\.\):]|$)', text)
+
+            if len(multi_option) >= 2 and current_q:
+                save_option()
+
+                for letter, content in multi_option:
+                    current_q["options"][letter] = content.strip()
+
+                    for run in paragraph.runs:
+                        if letter in run.text and is_correct_format(run, paragraph):
+                            current_q["correct"] = letter
+
+                return
+
+            option_match = re.match(r'^([A-D])[\.\):]\s*(.*)', text)
+
+            if not option_match and current_q and len(current_q["options"]) < 4:
+                option_letter = ["A", "B", "C", "D"][len(current_q["options"])]
+                current_q["options"][option_letter] = text
+
+                for run in paragraph.runs:
+                    if is_correct_format(run, paragraph) and run.text.strip():
+                        current_q["correct"] = option_letter
+                        break
+
+                continue
+
+            if option_match:
+                if option_match.group(1).upper() == 'A' and current_q and current_q.get("text"):
+                    save_option()
+                    if current_q["options"]:
+                        questions.append(current_q)
+
+                save_option()
+                current_option = option_match.group(1).upper()
+                option_buffer = option_match.group(2)
+
+                for run in paragraph.runs:
+                    if is_correct_format(run, paragraph):
+                        current_q["correct"] = current_option
+                        break
+
+                continue
+
+            if current_q is None or (current_q and current_q["options"]):
+                if current_q and current_q["options"]:
+                    save_option()
+                    questions.append(current_q)
+                    current_q = {"text": text, "options": {}, "correct": None}
+                else:
+                    if current_q is None:
+                        current_q = {"text": text, "options": {}, "correct": None}
+                    else:
+                        current_q["text"] += " " + text
+            else:
+                current_q["text"] += " " + text
 
     for para in doc.paragraphs:
         handle_paragraph(para)
@@ -77,6 +150,10 @@ def parse_docx(file_path):
         if not current_q["correct"]:
             current_q["correct"] = "incorrect"
         questions.append(current_q)
+
+        for i, q in enumerate(questions, start=1):
+            if not re.match(r'^(câu\s*\d+|\d+[\.\)])', q["text"], re.IGNORECASE):
+                q["text"] = f"Câu {i}. " + q["text"]
 
     return questions
 
