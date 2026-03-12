@@ -29,25 +29,18 @@ def parse_docx(file_path):
         current_option = None
 
     def is_correct_format(run, paragraph):
-
         if run.bold:
             return True
-
         if run.underline:
             return True
-
         if run.style and run.style.font and run.style.font.bold:
             return True
-
         if paragraph.style and paragraph.style.font and paragraph.style.font.bold:
             return True
-
         if run.font and run.font.highlight_color:
             return True
-
         if run.font and run.font.color and run.font.color.rgb:
             return True
-
         return False
 
     def handle_paragraph(paragraph):
